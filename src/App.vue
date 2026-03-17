@@ -8,8 +8,8 @@ const featured = [
     label: 'TS / PYTHON',
     description: 'File-based task coordination for humans and AI agents. Kanban, contracts, and ADRs in markdown.',
     meta: [
-      { label: 'Type', value: 'Task Protocol' },
-      { label: 'Install', value: 'npm install brainfile' },
+      { label: 'Format', value: 'Markdown + YAML' },
+      { label: 'Works with', value: 'Claude · Codex · Cursor' },
     ],
     url: 'https://brainfile.md',
     external: true,
@@ -20,7 +20,7 @@ const featured = [
     label: 'GO',
     description: 'Config-driven CLI unifying Claude, Codex, and Gemini from a single interface.',
     meta: [
-      { label: 'Type', value: 'Multi-Agent CLI' },
+      { label: 'Backends', value: 'Claude · Codex · Gemini' },
       { label: 'Output', value: 'Normalized JSON' },
     ],
     url: '/oneagent',
@@ -32,8 +32,8 @@ const featured = [
     label: 'GO',
     description: 'Smart code context extractor with relevance scoring, token counting, and language-aware filtering.',
     meta: [
-      { label: 'Type', value: 'Code Extractor' },
-      { label: 'Install', value: 'go install' },
+      { label: 'Scoring', value: 'Relevance-weighted' },
+      { label: 'Formats', value: '20+ languages' },
     ],
     url: '/promptext',
     external: false,
