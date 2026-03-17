@@ -24,7 +24,7 @@
 
 /* Massive Headline with Offset Outline */
 .hero-headline {
-  font-size: 11.5vw;
+  font-size: clamp(3rem, 11.5vw, 10rem);
   line-height: 0.9;
   font-weight: 700;
   color: var(--color-primary);

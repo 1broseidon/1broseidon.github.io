@@ -73,7 +73,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col p-8 md:p-12 bg-bg text-primary">
+  <div class="min-h-screen flex flex-col p-8 md:p-12 bg-bg text-primary max-w-[1400px] mx-auto w-full">
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 w-full z-50 px-8 py-6 flex items-center justify-between bg-bg/80 backdrop-blur-sm border-b border-divider">
       <div class="uppercase tracking-ultra-wide font-bold text-sm">
