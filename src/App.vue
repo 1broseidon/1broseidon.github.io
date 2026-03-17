@@ -1,27 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-const ghStats = ref<{ repos: string; stars: string; lastPush: string } | null>(null)
-
-onMounted(async () => {
-  try {
-    const res = await fetch('https://api.github.com/users/1broseidon/repos?per_page=100')
-    if (!res.ok) return
-    const repos = await res.json() as Array<{ stargazers_count: number; pushed_at: string }>
-    const stars = repos.reduce((sum: number, r: { stargazers_count: number }) => sum + r.stargazers_count, 0)
-    const lastPush = repos
-      .map((r: { pushed_at: string }) => r.pushed_at)
-      .sort()
-      .pop() ?? ''
-    const daysAgo = Math.floor((Date.now() - new Date(lastPush).getTime()) / 86400000)
-    ghStats.value = {
-      repos: String(repos.length),
-      stars: String(stars),
-      lastPush: daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`,
-    }
-  } catch { /* silent fail — footer just won't show stats */ }
-})
-
 const featured = [
   {
     id: 'brainfile',
@@ -32,7 +11,8 @@ const featured = [
       { label: 'Type', value: 'Task Protocol' },
       { label: 'Install', value: 'npm install brainfile' },
     ],
-    url: 'https://github.com/1broseidon/brainfile-marketing',
+    url: 'https://brainfile.md',
+    external: true,
   },
   {
     id: 'oneagent',
@@ -43,7 +23,8 @@ const featured = [
       { label: 'Type', value: 'Multi-Agent CLI' },
       { label: 'Output', value: 'Normalized JSON' },
     ],
-    url: 'https://github.com/1broseidon/oneagent',
+    url: '/oneagent',
+    external: false,
   },
   {
     id: 'promptext',
@@ -54,7 +35,8 @@ const featured = [
       { label: 'Type', value: 'Code Extractor' },
       { label: 'Install', value: 'go install' },
     ],
-    url: 'https://github.com/1broseidon/promptext',
+    url: '/promptext',
+    external: false,
   },
 ]
 
@@ -64,11 +46,30 @@ const others = [
     name: 'Termtile',
     label: 'GO',
     description: 'X11-native terminal tiling with smart grid layouts and workspace management.',
-    url: 'https://github.com/1broseidon/termtile',
+    url: '/termtile',
+    external: false,
   },
 ]
 
 const allProjects = [...featured, ...others]
+
+const ghStats = ref<{ lastPush: string } | null>(null)
+
+onMounted(async () => {
+  try {
+    const res = await fetch('https://api.github.com/users/1broseidon/repos?per_page=100')
+    if (!res.ok) return
+    const repos = await res.json() as Array<{ pushed_at: string }>
+    const lastPush = repos
+      .map((r: { pushed_at: string }) => r.pushed_at)
+      .sort()
+      .pop() ?? ''
+    const daysAgo = Math.floor((Date.now() - new Date(lastPush).getTime()) / 86400000)
+    ghStats.value = {
+      lastPush: daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`,
+    }
+  } catch { /* silent fail */ }
+})
 </script>
 
 <template>
@@ -112,7 +113,9 @@ const allProjects = [...featured, ...others]
       <!-- Featured cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <a v-for="(project, i) in featured" :key="project.id"
-           :href="project.url" target="_blank" rel="noopener"
+           :href="project.url"
+           :target="project.external ? '_blank' : undefined"
+           :rel="project.external ? 'noopener' : undefined"
            class="group border-matte p-6 hover:bg-accent/5 transition-colors flex flex-col">
           <div class="flex justify-between items-start mb-12">
             <span class="text-[11px] text-accent font-bold">{{ String(i + 1).padStart(3, '0') }}</span>
@@ -133,7 +136,7 @@ const allProjects = [...featured, ...others]
       <!-- Other projects — list format -->
       <div class="mt-12">
         <a v-for="(project, i) in others" :key="project.id"
-           :href="project.url" target="_blank" rel="noopener"
+           :href="project.url"
            class="group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_minmax(0,200px)_1fr_auto] items-center gap-6 py-5 border-t border-divider list-row transition-colors">
           <span class="text-[11px] text-accent font-bold">{{ String(featured.length + i + 1).padStart(3, '0') }}</span>
           <h3 class="text-sm uppercase font-bold tracking-widest">{{ project.name }}</h3>
