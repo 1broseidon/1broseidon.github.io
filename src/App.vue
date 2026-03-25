@@ -27,25 +27,49 @@ const featured = [
     external: false,
   },
   {
-    id: 'promptext',
-    name: 'Promptext',
+    id: 'moxie',
+    name: 'Moxie',
     label: 'GO',
-    description: 'Smart code context extractor with relevance scoring, token counting, and language-aware filtering.',
+    description: 'Always-on chat agent bridging Telegram and Slack with AI coding backends. Switch models, schedule tasks, delegate to subagents.',
     meta: [
-      { label: 'Scoring', value: 'Relevance-weighted' },
-      { label: 'Formats', value: '20+ languages' },
+      { label: 'Transports', value: 'Telegram · Slack' },
+      { label: 'Backends', value: 'Claude · Codex · Gemini' },
     ],
-    url: '/promptext',
-    external: false,
+    url: 'https://github.com/1broseidon/moxie',
+    external: true,
   },
 ]
 
 const others = [
   {
+    id: 'cymbal',
+    name: 'Cymbal',
+    label: 'GO',
+    description: 'Fast code indexer and symbol navigator built on tree-sitter.',
+    url: 'https://github.com/1broseidon/cymbal',
+    external: true,
+  },
+  {
+    id: 'ketch',
+    name: 'Ketch',
+    label: 'GO',
+    description: 'Stateless CLI for web search and scraping.',
+    url: 'https://github.com/1broseidon/ketch',
+    external: true,
+  },
+  {
+    id: 'promptext',
+    name: 'Promptext',
+    label: 'GO',
+    description: 'Smart code context extractor with relevance scoring.',
+    url: '/promptext',
+    external: false,
+  },
+  {
     id: 'termtile',
     name: 'Termtile',
     label: 'GO',
-    description: 'X11-native terminal tiling with smart grid layouts and workspace management.',
+    description: 'X11-native terminal tiling with smart grid layouts.',
     url: '/termtile',
     external: false,
   },
@@ -137,6 +161,8 @@ onMounted(async () => {
       <div class="mt-12">
         <a v-for="(project, i) in others" :key="project.id"
            :href="project.url"
+           :target="project.external ? '_blank' : undefined"
+           :rel="project.external ? 'noopener' : undefined"
            class="group grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_minmax(0,200px)_1fr_auto] items-center gap-6 py-5 border-t border-divider list-row transition-colors">
           <span class="text-[11px] text-accent font-bold">{{ String(featured.length + i + 1).padStart(3, '0') }}</span>
           <h3 class="text-sm uppercase font-bold tracking-widest">{{ project.name }}</h3>
