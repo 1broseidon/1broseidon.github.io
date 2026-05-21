@@ -1,0 +1,21 @@
+[
+  {
+    "date": "2026-05-21",
+    "verb": "redesign",
+    "macrostructure": "Bento Grid",
+    "genre": "modern-minimal",
+    "theme": "custom",
+    "theme_axes": "dark / italic-serif / chromatic-other",
+    "vibe": "dark · phosphor-green · editorial italic",
+    "display_face": "Instrument Serif",
+    "body_face": "Inter",
+    "mono_face": "JetBrains Mono",
+    "accent_oklch": "oklch(78% 0.16 145)",
+    "paper_oklch": "oklch(15.5% 0.015 250)",
+    "nav": "minimal-wordmark",
+    "footer": "hairline-meta",
+    "enrichment": "none",
+    "scope": "single-page",
+    "brief": "chain.sh · open-source dev tools landing (cymbal, ketch, brainfile featured in that order)"
+  }
+]
