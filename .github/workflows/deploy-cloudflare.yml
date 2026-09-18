@@ -1,0 +1,31 @@
+# Deploys chain.sh to Cloudflare Workers.
+#
+# Manual-trigger only for now: the GitHub Pages workflow still owns the live
+# site until chain.sh DNS is pointed at Cloudflare. Run this once to get a
+# *.workers.dev URL to check, then cut DNS over and switch the trigger to
+# `push: branches: [main]` (and retire deploy.yml).
+#
+# Requires repo secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
+
+name: Deploy to Cloudflare Workers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

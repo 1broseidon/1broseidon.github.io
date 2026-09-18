@@ -1,4 +1,4 @@
-/* Hallmark · v1.1.0
+/* Hallmark · v1.1.0 · zero-dependency static build
  * macrostructure: Index-First
  * genre: modern-minimal
  * theme: custom (ketch family — cool grey-teal paper · teal accent · mono display + sans body)
@@ -11,31 +11,16 @@
  * tokens mirrored to /tokens.css
  */
 
-@import "tailwindcss";
+/* ───── tokens · light is the base ───── */
 
-@theme {
+:root {
   --font-sans:  "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --font-serif: "IBM Plex Serif", ui-serif, Georgia, "Times New Roman", serif;
 
-  --spacing-3xs: 0.25rem;
-  --spacing-2xs: 0.5rem;
-  --spacing-xs:  0.75rem;
-  --spacing-sm:  1rem;
-  --spacing-md:  1.5rem;
-  --spacing-lg:  2rem;
-  --spacing-xl:  3rem;
-  --spacing-2xl: 4.5rem;
-  --spacing-3xl: 7rem;
-
   --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
   --dur-short:  150ms;
-  --dur-medium: 220ms;
-}
 
-/* ───── tokens · light is the base ───── */
-
-:root {
   --ground:        #F4F7F7;
   --surface:       #FFFFFF;
   --surface-2:     #E8EEEE;
@@ -96,8 +81,10 @@
 
 /* ───── base ───── */
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 html, body { overflow-x: clip; }
+h1, h2, p { margin: 0; font-size: inherit; font-weight: inherit; }
+svg { display: block; }
 html { background: var(--ground); }
 
 body {
