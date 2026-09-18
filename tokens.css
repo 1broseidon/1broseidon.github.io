@@ -1,24 +1,42 @@
 /* Hallmark · chain.sh tokens — portable design system
- * Mirror of @theme block in src/style.css. Drop this file into another
- * project root to carry the chain.sh design system forward.
+ * theme: ketch family (cool grey-teal paper · teal accent · mono display)
+ * Mirror of the :root + @theme blocks in src/style.css. Drop this file into
+ * another project root to carry the chain.sh / ketch design system forward.
+ * Source of truth for the palette: ketch.run.
  */
 
 :root {
   /* Type */
-  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
-  --font-sans:    "Inter", system-ui, -apple-system, sans-serif;
-  --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans:  "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "IBM Plex Serif", ui-serif, Georgia, "Times New Roman", serif;
 
-  /* Color — dark · cool · phosphor-green accent */
-  --color-paper:       oklch(15.5% 0.015 250);
-  --color-paper-2:     oklch(20.5% 0.015 250);
-  --color-ink:         oklch(94% 0.012 250);
-  --color-ink-2:       oklch(70% 0.015 250);
-  --color-ink-3:       oklch(52% 0.015 250);
-  --color-rule:        oklch(28% 0.015 250);
-  --color-accent:      oklch(78% 0.16 145);
-  --color-accent-ink:  oklch(15% 0.015 250);
-  --color-focus:       oklch(82% 0.18 145);
+  /* Color — light */
+  --ground:        #F4F7F7;
+  --surface:       #FFFFFF;
+  --surface-2:     #E8EEEE;
+  --border:        #D6DFDF;
+  --border-strong: #B4C2C2;
+  --text:          #101B1C;
+  --muted:         #5A6A6B;
+  --accent:        #0B6A72;
+  --accent-soft:   #DFEDEE;
+
+  /* Terminal blocks */
+  --term-bg:     #0C1516;
+  --term-text:   #C6D4D4;
+  --term-dim:    #78898A;
+  --term-prompt: #4FA3AB;
+  --term-key:    #8FC9CE;
+
+  /* Status */
+  --ok:   #2F7D4F;
+  --warn: #8A6A18;
+  --crit: #A64232;
+
+  /* Measure */
+  --measure: 62ch;
+  --wrap:    58rem;
 
   /* Space — 4pt scale */
   --space-3xs: 0.25rem;
@@ -33,20 +51,64 @@
 
   /* Type scale */
   --text-xs:  0.6875rem;
-  --text-sm:  0.875rem;
-  --text-md:  0.9375rem;
-  --text-lg:  1.0625rem;
+  --text-sm:  0.8125rem;
+  --text-md:  0.875rem;
+  --text-lg:  1.125rem;
   --text-xl:  1.5rem;
-  --text-2xl: 2.25rem;
-  --text-display:    clamp(2.5rem, 8.5vw, 6.25rem);
-  --text-display-sm: clamp(2.5rem, 5vw, 4rem);
+  --text-display: clamp(1.875rem, 6vw, 2.5rem);
 
   /* Motion */
   --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-short:  220ms;
-  --dur-medium: 320ms;
+  --dur-short:  150ms;
+  --dur-medium: 220ms;
 
   /* Radius */
-  --radius-input: 2px;
-  --radius-card:  0;
+  --radius-input: 3px;
+  --radius-card:  4px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:        #0D1516;
+    --surface:       #131D1E;
+    --surface-2:     #1A2526;
+    --border:        #243031;
+    --border-strong: #354546;
+    --text:          #DCE5E4;
+    --muted:         #8B9C9C;
+    --accent:        #5FBAC2;
+    --accent-soft:   #14282B;
+
+    --term-bg:  #070D0E;
+    --term-dim: #6F8081;
+
+    --ok:   #6DBE8C;
+    --warn: #CFA83F;
+    --crit: #E08A79;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:        #0D1516;
+  --surface:       #131D1E;
+  --surface-2:     #1A2526;
+  --border:        #243031;
+  --border-strong: #354546;
+  --text:          #DCE5E4;
+  --muted:         #8B9C9C;
+  --accent:        #5FBAC2;
+  --accent-soft:   #14282B;
+
+  --term-bg:  #070D0E;
+  --term-dim: #6F8081;
+
+  --ok:   #6DBE8C;
+  --warn: #CFA83F;
+  --crit: #E08A79;
+
+  color-scheme: dark;
 }

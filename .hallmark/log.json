@@ -1,12 +1,32 @@
 [
   {
+    "date": "2026-09-18",
+    "verb": "redesign",
+    "macrostructure": "Index-First",
+    "genre": "modern-minimal",
+    "theme": "custom",
+    "theme_axes": "light / mono / cool",
+    "vibe": "ketch family \u2014 utilitarian index of command-line tools",
+    "display_face": "IBM Plex Mono",
+    "body_face": "IBM Plex Sans",
+    "mono_face": "IBM Plex Mono",
+    "serif_face": "IBM Plex Serif",
+    "accent_oklch": "oklch(45.5% 0.070 197)",
+    "paper_oklch": "oklch(96.6% 0.005 197)",
+    "nav": "N9 edge-aligned minimal",
+    "footer": "Ft2 inline-rule single line",
+    "enrichment": "none",
+    "scope": "single-page",
+    "brief": "chain.sh \u00b7 adopt the ketch.run design system \u00b7 7-tool index (ketch, cymbal, hotline, brainfile featured; prism, recoil, skills also)"
+  },
+  {
     "date": "2026-05-21",
     "verb": "redesign",
     "macrostructure": "Bento Grid",
     "genre": "modern-minimal",
     "theme": "custom",
     "theme_axes": "dark / italic-serif / chromatic-other",
-    "vibe": "dark · phosphor-green · editorial italic",
+    "vibe": "dark \u00b7 phosphor-green \u00b7 editorial italic",
     "display_face": "Instrument Serif",
     "body_face": "Inter",
     "mono_face": "JetBrains Mono",
@@ -16,6 +36,6 @@
     "footer": "hairline-meta",
     "enrichment": "none",
     "scope": "single-page",
-    "brief": "chain.sh · open-source dev tools landing (cymbal, ketch, brainfile featured in that order)"
+    "brief": "chain.sh \u00b7 open-source dev tools landing (cymbal, ketch, brainfile featured in that order)"
   }
 ]
