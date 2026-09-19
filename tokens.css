@@ -1,42 +1,41 @@
 /* Hallmark · chain.sh tokens — portable design system
- * theme: ketch family (cool grey-teal paper · teal accent · mono display)
- * Mirror of the :root + @theme blocks in src/style.css. Drop this file into
- * another project root to carry the chain.sh / ketch design system forward.
- * Source of truth for the palette: ketch.run.
+ * theme: Lumen · drop: Day Foundry (cool bone paper · indigo accent that refracts · coral chord)
+ * axes: light paper (L 97%) / classical-serif-lowercase display / deep violet-indigo accent
+ *
+ * chain.sh has its own look. ketch.run and cymbal.sh ship the teal Plex system;
+ * this is the umbrella's, not a third sibling's. Drop this file into another
+ * project root to carry the chain.sh system forward.
  */
 
 :root {
-  /* Type */
-  --font-sans:  "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-serif: "IBM Plex Serif", ui-serif, Georgia, "Times New Roman", serif;
+  /* Type — three families, no fourth */
+  --font-display: "Instrument Serif", "Tiempos Headline", ui-serif, Georgia, "Times New Roman", serif;
+  --font-body:    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-label:   "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Color — light */
-  --ground:        #F4F7F7;
-  --surface:       #FFFFFF;
-  --surface-2:     #E8EEEE;
-  --border:        #D6DFDF;
-  --border-strong: #B4C2C2;
-  --text:          #101B1C;
-  --muted:         #5A6A6B;
-  --accent:        #0B6A72;
-  --accent-soft:   #DFEDEE;
+  /* Colour — Day Foundry. Light captured and separated, never generated. */
+  --color-paper:   oklch(97% 0.008 265);
+  --color-paper-2: oklch(94.5% 0.010 265);
+  --color-paper-3: oklch(91.5% 0.012 265);
+  --color-ink:     oklch(18% 0.014 265);
+  --color-ink-2:   oklch(32% 0.014 265);
+  --color-muted:   oklch(50% 0.014 265);
 
-  /* Terminal blocks */
-  --term-bg:     #0C1516;
-  --term-text:   #C6D4D4;
-  --term-dim:    #78898A;
-  --term-prompt: #4FA3AB;
-  --term-key:    #8FC9CE;
+  --color-accent:   oklch(46% 0.24 268);   /* deep violet-indigo — the signal */
+  --color-accent-2: oklch(58% 0.19 22);    /* coral chord — the red end of the spectrum */
+  --color-glow:     oklch(58% 0.22 268 / 0.28);
+  --color-paper-emit: oklch(46% 0.24 268 / 0.03);
 
-  /* Status */
-  --ok:   #2F7D4F;
-  --warn: #8A6A18;
-  --crit: #A64232;
+  /* Rules — hairlines are the structure */
+  --color-rule:    oklch(18% 0.014 265 / 0.14);
+  --color-rule-2:  oklch(18% 0.014 265 / 0.26);
+  --rule-blueprint: oklch(18% 0.014 265 / 0.055);
+  --rule-hair: 1px;
 
   /* Measure */
-  --measure: 62ch;
-  --wrap:    58rem;
+  --measure: 58ch;
+  --wrap:    72rem;
+  --page-gutter: clamp(1.25rem, 4vw, 2.5rem);
 
   /* Space — 4pt scale */
   --space-3xs: 0.25rem;
@@ -50,65 +49,29 @@
   --space-3xl: 7rem;
 
   /* Type scale */
-  --text-xs:  0.6875rem;
+  --text-label: 0.6875rem;
+  --text-xs:  0.75rem;
   --text-sm:  0.8125rem;
-  --text-md:  0.875rem;
-  --text-lg:  1.125rem;
-  --text-xl:  1.5rem;
-  --text-display: clamp(1.875rem, 6vw, 2.5rem);
+  --text-md:  0.9375rem;
+  --text-lg:  1.0625rem;
+  --text-xl:  1.375rem;
+  --text-display-s: clamp(1.875rem, 4.5vw, 2.75rem);
+  --text-display:   clamp(2.5rem, 6.4vw, 4.5rem);
+  --text-numeral:   clamp(2.25rem, 4vw + 1rem, 3.75rem);
+
+  /* Tracking */
+  --tracking-micro:   0.10em;
+  --tracking-display: -0.032em;
 
   /* Motion */
-  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-short:  150ms;
-  --dur-medium: 220ms;
+  --ease-soft:  cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-short:  220ms;
+  --dur-reveal: 320ms;
+  --dur-enter:  600ms;
 
-  /* Radius */
-  --radius-input: 3px;
-  --radius-card:  4px;
+  /* Radius — machined, not soft */
+  --radius-input: 2px;
+  --radius-card:  3px;
 
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ground:        #0D1516;
-    --surface:       #131D1E;
-    --surface-2:     #1A2526;
-    --border:        #243031;
-    --border-strong: #354546;
-    --text:          #DCE5E4;
-    --muted:         #8B9C9C;
-    --accent:        #5FBAC2;
-    --accent-soft:   #14282B;
-
-    --term-bg:  #070D0E;
-    --term-dim: #6F8081;
-
-    --ok:   #6DBE8C;
-    --warn: #CFA83F;
-    --crit: #E08A79;
-
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --ground:        #0D1516;
-  --surface:       #131D1E;
-  --surface-2:     #1A2526;
-  --border:        #243031;
-  --border-strong: #354546;
-  --text:          #DCE5E4;
-  --muted:         #8B9C9C;
-  --accent:        #5FBAC2;
-  --accent-soft:   #14282B;
-
-  --term-bg:  #070D0E;
-  --term-dim: #6F8081;
-
-  --ok:   #6DBE8C;
-  --warn: #CFA83F;
-  --crit: #E08A79;
-
-  color-scheme: dark;
 }

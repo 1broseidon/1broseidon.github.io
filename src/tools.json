@@ -1,76 +1,48 @@
 {
-  "featured": [
+  "tools": [
     {
       "id": "ketch",
       "name": "ketch",
-      "description": "Stateless CLI for web search, OSS code search, library docs and scraping. Built for AI agents.",
+      "description": "Search the web, read documentation, and bring useful research back to your agent.",
+      "role": "Research",
       "dest": "ketch.run",
       "url": "https://ketch.run",
-      "external": true,
+      "install": "https://ketch.run/#install",
       "lang": "Go",
       "license": "MIT"
     },
     {
       "id": "cymbal",
       "name": "cymbal",
-      "description": "Language-agnostic code navigation powered by tree-sitter. Symbols, call graphs, impact.",
-      "dest": "chain.sh/cymbal",
-      "url": "/cymbal/",
-      "external": false,
+      "description": "Find your way through a codebase and understand what a change will affect.",
+      "role": "Code navigation",
+      "dest": "cymbal.sh",
+      "url": "https://cymbal.sh",
+      "install": "https://cymbal.sh/#install",
       "lang": "Go",
-      "license": "MIT"
-    },
-    {
-      "id": "hotline",
-      "name": "hotline",
-      "description": "A local-first room for your team of coding agents, over the Agent Client Protocol.",
-      "dest": "hotline.dev",
-      "url": "https://hotline.dev",
-      "external": true,
-      "lang": "Rust",
-      "license": "Apache-2.0"
-    },
-    {
-      "id": "brainfile",
-      "name": "brainfile",
-      "description": "Markdown task boards for you and your agents. CLI, TUI and MCP server.",
-      "dest": "brainfile.md",
-      "url": "https://brainfile.md",
-      "external": true,
-      "lang": "TypeScript",
-      "license": "MIT"
-    }
-  ],
-  "also": [
-    {
-      "id": "prism",
-      "name": "prism",
-      "description": "Local MCP gateway in the system tray. One endpoint, human-in-the-loop tool approval.",
-      "dest": "github",
-      "url": "https://github.com/1broseidon/prism",
-      "external": true,
-      "lang": "Rust",
       "license": "MIT"
     },
     {
       "id": "recoil",
       "name": "recoil",
-      "description": "Fast local memory recall for agents and humans.",
+      "description": "Read the docs you already wrote into local memory, and keep the decisions made against them.",
+      "role": "Memory",
       "dest": "github",
       "url": "https://github.com/1broseidon/recoil",
-      "external": true,
+      "install": "https://github.com/1broseidon/recoil#install",
       "lang": "Go",
       "license": "MIT"
     },
     {
-      "id": "skills",
-      "name": "skills",
-      "description": "Agent skills for coding agents — anvil for backend craft, scribe for documentation.",
-      "dest": "github",
-      "url": "https://github.com/1broseidon/skills",
-      "external": true,
-      "lang": "Markdown",
-      "license": "—"
+      "id": "brainfile",
+      "name": "brainfile",
+      "description": "Keep tasks, plans, and progress in Markdown that you and your agents can share.",
+      "role": "Task planning",
+      "dest": "brainfile.md",
+      "url": "https://brainfile.md",
+      "install": "https://brainfile.md/quick-start",
+      "lang": "TypeScript",
+      "license": "MIT"
     }
   ]
 }

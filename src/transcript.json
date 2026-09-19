@@ -1,0 +1,81 @@
+{
+  "task": "Swapping the per-file parser cache in cymbal",
+  "note": "Every command here was run and every line of output is verbatim. Long blocks are cut at a marked ellipsis; nothing is reworded.",
+  "steps": [
+    {
+      "tool": "ketch",
+      "why": "Read up before touching anything.",
+      "callout": "5 results · backend brave",
+      "lines": [
+        "$ ketch search \"tree-sitter incremental parsing cache invalidation\"",
+        "---",
+        "query: tree-sitter incremental parsing cache invalidation",
+        "backend: brave",
+        "result_count: 5",
+        "---",
+        "GitHub - tree-sitter/tree-sitter: An incremental parsing system",
+        "  https://github.com/tree-sitter/tree-sitter",
+        "  Tree-sitter is a parser generator tool and an incremental parsing",
+        "  library. It can build a concrete syntax tree for a source file and",
+        "  efficiently update the syntax tree as the source file is edited.",
+        "  …"
+      ]
+    },
+    {
+      "tool": "cymbal",
+      "why": "Find out what the change would actually touch.",
+      "callout": "80 refs · 5 files",
+      "lines": [
+        "$ cymbal impact TreeSitter",
+        "---",
+        "symbol: TreeSitter",
+        "depth: 2",
+        "total_callers: 50 (0 production, 50 test)",
+        "metrics: 80 (2 production, 78 test) refs in 5 (1 production, 4 test) files",
+        "---",
+        "# depth 1",
+        "parser/implements_test.go:32:",
+        "    \tt.Helper()",
+        "  > \ttsLang := lang.Default.TreeSitter(language)",
+        "    \tif tsLang == nil {",
+        "  …"
+      ]
+    },
+    {
+      "tool": "recoil",
+      "why": "Pull in what the project already documents, then record the call.",
+      "callout": "14 files read · 6 chunks",
+      "lines": [
+        "$ recoil mine . --dry-run",
+        "---",
+        "scope: project",
+        "files_scanned: 14",
+        "files_skipped: 155",
+        "chunks: 6",
+        "---",
+        "",
+        "$ recoil decide --claim-key parser-cache \\",
+        "    \"the cache stays bounded by bytes, not entry count\"",
+        "---",
+        "id: mem_utrhz7q64gefyb2d3xpzanlwsi",
+        "role: decision",
+        "claim_key: parser-cache",
+        "validity: active",
+        "---"
+      ]
+    },
+    {
+      "tool": "brainfile",
+      "why": "Write the next step down where the next session will find it.",
+      "callout": "task-1 · to do",
+      "lines": [
+        "$ brainfile add --title \"Swap the per-file parser cache\"",
+        "Task added successfully!",
+        "",
+        "  ID:       task-1",
+        "  Title:    Swap the per-file parser cache",
+        "  Column:   To Do"
+      ]
+    }
+  ]
+}
