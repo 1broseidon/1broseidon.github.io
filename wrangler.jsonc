@@ -1,20 +1,13 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "chain-sh",
-  "main": "worker/index.js",
   "compatibility_date": "2026-09-15",
 
+  // Pure static assets — no Worker script. Sub-path forwarding lives in
+  // dist/_redirects, which Workers serves natively.
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS",
     "not_found_handling": "none"
-  },
-
-  "vars": {
-    // Where the per-project GitHub Pages sites are served from. Only resolves
-    // once the chain.sh custom domain is removed from the user site's Pages
-    // settings — until then the Worker returns a 502 explaining why.
-    "PROJECT_ORIGIN": "https://1broseidon.github.io"
   },
 
   "observability": {
