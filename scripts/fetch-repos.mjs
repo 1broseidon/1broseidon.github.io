@@ -1,6 +1,6 @@
 /* Refreshes src/repos.json (stars + release counts) from the GitHub API at
  * build time. Never fails the build: on any error the committed counts stand.
- * The counts are shown on the page, so they have to be real, not decorative. */
+ * Keep build metadata current without making a network outage block the site. */
 
 import { readFile, writeFile } from 'node:fs/promises'
 
