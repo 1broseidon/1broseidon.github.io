@@ -1,0 +1,48 @@
+{
+  "tools": [
+    {
+      "id": "ketch",
+      "name": "ketch",
+      "description": "Search the web, read documentation, and bring useful research back to your agent.",
+      "role": "Research",
+      "dest": "ketch.run",
+      "url": "https://ketch.run",
+      "install": "https://ketch.run/#install",
+      "lang": "Go",
+      "license": "MIT"
+    },
+    {
+      "id": "cymbal",
+      "name": "cymbal",
+      "description": "Find your way through a codebase and understand what a change will affect.",
+      "role": "Code navigation",
+      "dest": "cymbal.sh",
+      "url": "https://cymbal.sh",
+      "install": "https://cymbal.sh/#install",
+      "lang": "Go",
+      "license": "MIT"
+    },
+    {
+      "id": "recoil",
+      "name": "recoil",
+      "description": "Read the docs you already wrote into local memory, and keep the decisions made against them.",
+      "role": "Memory",
+      "dest": "github",
+      "url": "https://github.com/1broseidon/recoil",
+      "install": "https://github.com/1broseidon/recoil#install",
+      "lang": "Go",
+      "license": "MIT"
+    },
+    {
+      "id": "brainfile",
+      "name": "brainfile",
+      "description": "Keep tasks, plans, and progress in Markdown that you and your agents can share.",
+      "role": "Task planning",
+      "dest": "brainfile.md",
+      "url": "https://brainfile.md",
+      "install": "https://brainfile.md/quick-start",
+      "lang": "TypeScript",
+      "license": "MIT"
+    }
+  ]
+}
