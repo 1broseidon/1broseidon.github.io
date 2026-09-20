@@ -11,7 +11,7 @@
  * output — do not edit it to look better.
  */
 
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile, copyFile } from 'node:fs/promises'
 
 const root = (path) => new URL(path, import.meta.url)
 
@@ -315,6 +315,14 @@ await rm(root('dist'), { recursive: true, force: true })
 await mkdir(root('dist'), { recursive: true })
 await writeFile(root('dist/index.html'), html)
 await writeFile(root('dist/_redirects'), redirects)
+
+/* bootstrap.sh is served as-is so an operator can read it in a browser before
+ * running it — that is the whole point of it being a plain shell script.
+ * Without the header rule the .sh extension is served as a download. */
+await copyFile(root('bootstrap.sh'), root('dist/bootstrap.sh'))
+await writeFile(root('dist/_headers'), `/bootstrap.sh
+  Content-Type: text/plain; charset=utf-8
+`)
 
 const kb = (n) => `${(n / 1024).toFixed(2)} kB`
 console.log(
