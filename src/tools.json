@@ -40,7 +40,7 @@
       "role": "Task planning",
       "dest": "brainfile.md",
       "url": "https://brainfile.md",
-      "install": "https://brainfile.md/quick-start",
+      "install": "https://brainfile.md/#install",
       "lang": "TypeScript",
       "license": "MIT"
     }
