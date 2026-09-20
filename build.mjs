@@ -80,53 +80,56 @@ const orbitNeeds = [
   { tool: 'brainfile', need: 'a clear next step', response: 'keeps the tasks in view.' },
 ]
 
-/* Orbit geometry is derived, not hand-drawn: the ring, its calibration ticks,
- * every tool's dot and every label's offset fall out of ORBIT plus the number
- * of tools. The same constants go to page.js as data-* on the stage, so the
- * server-rendered first frame and the animation cannot drift apart — and a
- * fifth tool re-spaces the ring instead of landing on top of a fourth. */
-const ORBIT = { w: 440, h: 320, cx: 220, cy: 152, rx: 132, ry: 98, start: -135, label: 1.28, ticks: 48 }
+/* The dial is derived, not hand-drawn: four stations on one circle, a leader
+ * from each station to its label, and a needle sized to the hub. The pivot,
+ * the hub's width and how far the signal runs go into the markup with the
+ * coordinates, so page.css carries no geometry of its own and the drawing and
+ * its animation cannot drift apart. A fifth tool re-spaces the stations
+ * instead of landing on top of a fourth. */
+const DIAL = { w: 440, h: 320, cx: 220, cy: 160, r: 118, lead: 16, hub: 99, start: -135 }
 
-const pointAt = (deg, k = 1) => {
-  const rad = (deg * Math.PI) / 180
-  return { x: ORBIT.cx + ORBIT.rx * k * Math.cos(rad), y: ORBIT.cy + ORBIT.ry * k * Math.sin(rad), rad }
-}
-const nodeDeg = (index) => ORBIT.start + (360 / orbitNeeds.length) * index
-const px = (v) => `${((v / ORBIT.w) * 100).toFixed(3)}%`
-const py = (v) => `${((v / ORBIT.h) * 100).toFixed(3)}%`
+const rad = (deg) => (deg * Math.PI) / 180
+const px = (v) => `${((v / DIAL.w) * 100).toFixed(3)}%`
+const py = (v) => `${((v / DIAL.h) * 100).toFixed(3)}%`
 const n2 = (v) => v.toFixed(2)
 
-/* Emitted as a rule ahead of page.css rather than an inline style: inline
- * declarations outrank media queries, which would freeze --label-k at its
- * desktop value and silently disable the narrow-screen override. */
-const orbitVars = `.orbit-stage { --hub-x: ${px(ORBIT.cx)}; --hub-y: ${py(ORBIT.cy)}; --label-k: ${ORBIT.label}; }`
+// The needle runs from just outside the hub to just short of the ring; the
+// signal rides it as far as the station's edge.
+const needleFrom = DIAL.cx + DIAL.hub / 2 + 6.5
+const needleTo = DIAL.cx + DIAL.r - 5
+const signalRun = needleTo - needleFrom - 1
 
-/* Ticks stay fixed while the tools travel past them. That is what makes the
- * rotation legible as motion rather than a diamond slowly wobbling. */
-const orbitTicks = Array.from({ length: ORBIT.ticks }, (_, i) => {
-  const deg = ORBIT.start + (360 / ORBIT.ticks) * i
-  const major = i % (ORBIT.ticks / orbitNeeds.length) === 0
-  const a = pointAt(deg)
-  const b = pointAt(deg, major ? 1.085 : 1.045)
-  return `          <line class="orbit-tick${major ? ' is-major' : ''}" x1="${n2(a.x)}" y1="${n2(a.y)}" x2="${n2(b.x)}" y2="${n2(b.y)}"/>`
-}).join('\n')
-
-/* Depth: 0 at the back of the ring, 1 at the front. Drives scale and weight so
- * the four tools read as orbiting rather than pinned to a flat diamond. */
-const depthAt = (rad) => (Math.sin(rad) + 1) / 2
-
-const orbitDot = (state, index) => {
-  const p = pointAt(nodeDeg(index))
-  return `          <circle class="orbit-dot${index === 0 ? ' is-selected' : ''}" data-dot="${esc(state.tool)}" cx="${n2(p.x)}" cy="${n2(p.y)}" r="3.25" style="--depth:${depthAt(p.rad).toFixed(3)}"/>`
+const station = (index) => {
+  const deg = DIAL.start + (360 / orbitNeeds.length) * index
+  const at = (k) => ({ x: DIAL.cx + k * Math.cos(rad(deg)), y: DIAL.cy + k * Math.sin(rad(deg)) })
+  return { deg, on: at(DIAL.r), end: at(DIAL.r + DIAL.lead), west: Math.cos(rad(deg)) < 0, north: Math.sin(rad(deg)) < 0 }
 }
 
+const orbitLeader = (state, index) => {
+  const s = station(index)
+  return `          <line class="orbit-leader${index === 0 ? ' is-engaged' : ''}" data-leader="${esc(state.tool)}" x1="${n2(s.on.x)}" y1="${n2(s.on.y)}" x2="${n2(s.end.x)}" y2="${n2(s.end.y)}"/>`
+}
+const orbitStation = (state, index) => {
+  const s = station(index)
+  return `          <circle class="orbit-station${index === 0 ? ' is-engaged' : ''}" data-station="${esc(state.tool)}" cx="${n2(s.on.x)}" cy="${n2(s.on.y)}" r="3.25"/>`
+}
+const orbitPing = (state, index) => {
+  const s = station(index)
+  return `          <circle class="orbit-ping" data-ping="${esc(state.tool)}" cx="${n2(s.on.x)}" cy="${n2(s.on.y)}" r="5"/>`
+}
+
+/* Each label hangs off the end of its leader by the corner nearest the ring,
+ * so it grows away from the drawing: up and to the left above the north-west
+ * station, down and to the right below the south-east one, and so on. */
 const orbitNode = (state, index) => {
   const tool = byId[state.tool]
-  const p = pointAt(nodeDeg(index), ORBIT.label)
-  return `        <button class="orbit-tool${index === 0 ? ' is-selected' : ''}" type="button" disabled
+  const s = station(index)
+  const x = s.west ? `right:${px(DIAL.w - s.end.x)}` : `left:${px(s.end.x)}`
+  const y = s.north ? `bottom:${py(DIAL.h - s.end.y)}` : `top:${py(s.end.y)}`
+  return `        <button class="orbit-tool${index === 0 ? ' is-selected is-engaged' : ''}" type="button" disabled
           data-orbit-tool="${esc(tool.id)}" data-need="${esc(state.need)}" data-response="${esc(state.response)}"
-          data-spec="${esc(`${tool.lang} · ${tool.license}`)}"
-          style="left:${px(p.x)};top:${py(p.y)};--depth:${depthAt(p.rad).toFixed(3)}"
+          data-spec="${esc(`${tool.lang} · ${tool.license}`)}" data-angle="${s.deg}" data-side="${s.west ? 'w' : 'e'}"
+          style="${x};${y}"
           aria-pressed="${index === 0}" aria-label="${esc(tool.name)}: ${esc(tool.role)}" aria-controls="orbit-readout">
           <span class="orbit-tool-name">${esc(tool.name)}</span><span class="orbit-tool-role">${esc(tool.role)}</span>
         </button>`
@@ -136,6 +139,7 @@ const toolRow = (tool) => `        <li class="tool-row" id="${esc(tool.id)}">
           <div class="tool-heading">
             <h3><a href="${esc(tool.url)}" target="_blank" rel="noopener noreferrer">${esc(tool.name)}<span class="sr-only"> (opens in a new tab)</span></a></h3>
             <p class="tool-role">${esc(tool.role)}</p>
+            <p class="tool-spec">${esc(`${tool.lang} · ${tool.license}`)}</p>
           </div>
           <p class="tool-description">${esc(tool.description)}</p>
           <a class="tool-guide" href="${esc(tool.install)}" target="_blank" rel="noopener noreferrer">Get started<span class="sr-only"> with ${esc(tool.name)} (opens in a new tab)</span></a>
@@ -143,12 +147,12 @@ const toolRow = (tool) => `        <li class="tool-row" id="${esc(tool.id)}">
 
 const panel = (tool) => {
   const prompt = `Help me set up ${tool.name} for this project. Read ${tool.install} for the current installation and setup instructions. Check support for my operating system and any prerequisites, explain the setup choices, then verify that it works.`
-  return `        <div class="panel" id="setup-${esc(tool.id)}" aria-labelledby="setup-title-${esc(tool.id)}">
+  return `        <div class="panel" id="setup-${esc(tool.id)}" aria-labelledby="setup-title-${esc(tool.id)}" data-copy-scope>
           <h3 id="setup-title-${esc(tool.id)}">Set up ${esc(tool.name)}</h3>
           <p class="panel-description">${esc(tool.description)}</p>
           <div class="panel-actions">
             <a class="btn btn-primary" href="${esc(tool.install)}" target="_blank" rel="noopener noreferrer">Open install guide ${arrow}<span class="sr-only"> for ${esc(tool.name)} (opens in a new tab)</span></a>
-            <button class="copy-button" type="button" data-copy="prompt-${esc(tool.id)}" hidden>Copy setup prompt</button>
+            <button class="copy-button" type="button" data-copy="prompt-${esc(tool.id)}" data-copied="Copied. Ready to paste into your agent’s chat." hidden>Copy setup prompt</button>
           </div>
           <p class="panel-hint">Follow the guide for installation and first steps.</p>
           <label class="sr-only" for="prompt-${esc(tool.id)}">Setup prompt for ${esc(tool.name)}</label>
@@ -167,7 +171,7 @@ const html = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#F1F0EB">
+<meta name="theme-color" content="#F7F6F1">
 <title>chain.sh — tools for coding agents</title>
 <meta name="description" content="${description}">
 <link rel="canonical" href="https://chain.sh/">
@@ -180,7 +184,6 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>${tokens.trim()}
-${orbitVars}
 ${css.trim()}</style>
 </head>
 <body>
@@ -203,18 +206,16 @@ ${css.trim()}</style>
       <p class="hero-note">Use one on its own, or bring them into the same workflow.</p>
       <a class="text-link hero-link" href="#tools">Explore the tools</a>
     </div>
-    <figure class="orbit" aria-label="An example of an agent reaching for the tool it needs">
-      <div class="orbit-stage" role="group" aria-label="Explore the agent’s tools"
-        data-cx="${ORBIT.cx}" data-cy="${ORBIT.cy}" data-rx="${ORBIT.rx}" data-ry="${ORBIT.ry}"
-        data-start="${ORBIT.start}" data-label="${ORBIT.label}" data-w="${ORBIT.w}" data-h="${ORBIT.h}">
-        <svg class="orbit-drawing" viewBox="0 0 ${ORBIT.w} ${ORBIT.h}" fill="none" aria-hidden="true">
-          <ellipse class="orbit-track" cx="${ORBIT.cx}" cy="${ORBIT.cy}" rx="${ORBIT.rx}" ry="${ORBIT.ry}"/>
-${orbitTicks}
-          <path class="orbit-reach" d="M${ORBIT.cx} ${ORBIT.cy}L${n2(pointAt(nodeDeg(0)).x)} ${n2(pointAt(nodeDeg(0)).y)}"/>
-${orbitNeeds.map(orbitDot).join('\n')}
-          <circle class="orbit-signal" cx="${ORBIT.cx}" cy="${ORBIT.cy}" r="3"/>
+    <figure class="orbit" data-phase="home" data-answered="true" aria-label="An example of an agent reaching for the tool it needs">
+      <div class="orbit-stage" role="group" aria-label="Explore the agent’s tools">
+        <svg class="orbit-drawing" viewBox="0 0 ${DIAL.w} ${DIAL.h}" fill="none" aria-hidden="true">
+          <circle class="orbit-track" cx="${DIAL.cx}" cy="${DIAL.cy}" r="${DIAL.r}"/>
+${orbitNeeds.map(orbitLeader).join('\n')}
+          <g class="orbit-needle" style="--angle:${station(0).deg}deg;transform-origin:${DIAL.cx}px ${DIAL.cy}px"><line class="orbit-needle-line" x1="${needleFrom}" y1="${DIAL.cy}" x2="${needleTo}" y2="${DIAL.cy}"/><circle class="orbit-signal" cx="${needleFrom}" cy="${DIAL.cy}" r="3" style="--run:${signalRun}px"/></g>
+${orbitNeeds.map(orbitStation).join('\n')}
+${orbitNeeds.map(orbitPing).join('\n')}
         </svg>
-        <div class="orbit-agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 7 5 5-5 5m8 0h5"/></svg><span>Your agent</span></div>
+        <div class="orbit-agent" style="width:${px(DIAL.hub)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 7 5 5-5 5m8 0h5"/></svg><span>Agent</span></div>
 ${orbitNeeds.map(orbitNode).join('\n')}
       </div>
       <figcaption class="orbit-caption">
@@ -265,6 +266,16 @@ ${tools.map((tool) => `              <option value="${esc(tool.id)}">${esc(tool.
       </div>
       <div class="panels">
 ${tools.map(panel).join('\n')}
+      </div>
+      <div class="start-all" data-copy-scope>
+        <h3>Or all four at once.</h3>
+        <p>One command for macOS and Linux. It installs each tool from its latest release, checks every download against the release’s checksums, and never uses sudo. It is a plain shell script — read it first.</p>
+        <pre class="command"><code id="bootstrap-command">curl -fsSL https://chain.sh/bootstrap.sh | sh</code></pre>
+        <div class="start-all-actions">
+          <a class="text-link" href="https://chain.sh/bootstrap.sh">Read bootstrap.sh</a>
+          <button class="copy-button" type="button" data-copy="bootstrap-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
+        </div>
+        <p class="copy-status" role="status" aria-live="polite"></p>
       </div>
     </div>
   </section>
