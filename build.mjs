@@ -267,15 +267,27 @@ ${tools.map((tool) => `              <option value="${esc(tool.id)}">${esc(tool.
       <div class="panels">
 ${tools.map(panel).join('\n')}
       </div>
-      <div class="start-all" data-copy-scope>
-        <h3>Or all four at once.</h3>
-        <p>One command for macOS and Linux. It installs each tool from its latest release, checks every download against the release’s checksums, and never uses sudo. It is a plain shell script — read it first.</p>
-        <pre class="command"><code id="bootstrap-command">curl -fsSL https://chain.sh/bootstrap.sh | sh</code></pre>
-        <div class="start-all-actions">
-          <a class="text-link" href="https://chain.sh/bootstrap.sh">Read bootstrap.sh</a>
-          <button class="copy-button" type="button" data-copy="bootstrap-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
+      <div class="start-all">
+        <div class="start-method" data-copy-scope>
+          <h3>Or all four at once.</h3>
+          <p>One command for macOS and Linux. It installs each tool from its latest release, checks every download against the release’s checksums, and never uses sudo. It is a plain shell script — read it first.</p>
+          <pre class="command"><code id="bootstrap-command">curl -fsSL https://chain.sh/bootstrap.sh | sh</code></pre>
+          <div class="start-all-actions">
+            <a class="text-link" href="https://chain.sh/bootstrap.sh">Read bootstrap.sh</a>
+            <button class="copy-button" type="button" data-copy="bootstrap-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
+          </div>
+          <p class="copy-status" role="status" aria-live="polite"></p>
         </div>
-        <p class="copy-status" role="status" aria-live="polite"></p>
+        <div class="start-method" data-copy-scope>
+          <h3>Or hand your agent the workflow.</h3>
+          <p>The chain skill teaches an agent which tool answers which question, what order to ask them in, and what to write back before a session ends. One command adds it to the agents you already use, through the skills CLI. It installs none of the tools; the script above does that.</p>
+          <pre class="command"><code id="skill-command">npx skills add 1broseidon/skills --skill chain</code></pre>
+          <div class="start-all-actions">
+            <a class="text-link" href="https://github.com/1broseidon/skills/blob/main/chain/SKILL.md" target="_blank" rel="noopener noreferrer">Read SKILL.md<span class="sr-only"> (opens in a new tab)</span></a>
+            <button class="copy-button" type="button" data-copy="skill-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
+          </div>
+          <p class="copy-status" role="status" aria-live="polite"></p>
+        </div>
       </div>
     </div>
   </section>

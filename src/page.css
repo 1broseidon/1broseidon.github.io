@@ -248,10 +248,12 @@ h2 { color: var(--color-ink); font: var(--text-display-s)/1.12 var(--font-displa
 .copy-status { min-height: 1.5em; margin-top: .5rem; color: var(--color-accent); font-size: .8125rem; }
 .prompt-fallback { width: 100%; margin-top: .75rem; padding: .75rem; border: 1px solid var(--color-rule-2); border-radius: 4px; background: var(--color-paper); font-size: .875rem; line-height: 1.6; resize: vertical; }
 
-/* The other door: every tool at once, from a script the reader can open first. */
+/* The other doors: every tool at once, from a script the reader can open first,
+ * and the skill that teaches an agent the workflow. One rule separates them. */
 .start-all { grid-area: all; min-width: 0; padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
-.start-all h3 { color: var(--color-ink); font: 1.5rem/1.25 var(--font-display); letter-spacing: -.02em; }
-.start-all > p { max-width: 38ch; margin-top: .8rem; font-size: .9375rem; }
+.start-method + .start-method { margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
+.start-method h3 { color: var(--color-ink); font: 1.5rem/1.25 var(--font-display); letter-spacing: -.02em; }
+.start-method > p { max-width: 38ch; margin-top: .8rem; font-size: .9375rem; }
 /* The command wraps rather than scrolls: on a phone the whole line has to be seen to be trusted. */
 .command { margin: var(--space-sm) 0 0; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-rule); border-radius: var(--radius-card); background: var(--color-paper-2); color: var(--color-ink); font: .8125rem/1.7 var(--font-label); white-space: pre-wrap; overflow-wrap: anywhere; }
 .start-all-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; margin-top: var(--space-2xs); }

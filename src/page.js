@@ -219,7 +219,7 @@
   }
 
   // Every copy button names its source by id: a hidden textarea holding a setup
-  // prompt, or the visible bootstrap command. Its confirmation and status live
+  // prompt, or a visible install command. Its confirmation and status live
   // in the nearest [data-copy-scope].
   document.querySelectorAll('[data-copy]').forEach((button) => {
     const scope = button.closest('[data-copy-scope]')
