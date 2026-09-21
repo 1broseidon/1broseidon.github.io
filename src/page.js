@@ -12,118 +12,123 @@
   const link = orbit.querySelector('.orbit-response a')
   const spec = orbit.querySelector('.orbit-spec')
   const announcement = orbit.querySelector('.orbit-announcement')
-  const reach = orbit.querySelector('.orbit-reach')
-  const signal = orbit.querySelector('.orbit-signal')
+  const needle = orbit.querySelector('.orbit-needle')
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
 
-  // Geometry is read from the stage, so build.mjs stays its single source and
-  // the animation cannot drift away from the server-rendered first frame.
-  const g = stage.dataset
-  const [cx, cy, rx, ry, start, boxW, boxH] =
-    ['cx', 'cy', 'rx', 'ry', 'start', 'w', 'h'].map((key) => Number(g[key]))
-  const spacing = 360 / nodes.length
+  // Each label is paired with its station, leader and ping once, up front. The
+  // angles arrive with the markup from build.mjs, so the needle and the drawing
+  // share one geometry.
+  const part = (attr) => nodes.map((node) => orbit.querySelector(`[${attr}="${node.dataset.orbitTool}"]`))
+  const stations = part('data-station')
+  const leaders = part('data-leader')
+  const pings = part('data-ping')
+  const angles = nodes.map((node) => Number(node.dataset.angle))
 
-  // How far the labels stand off the ring. build.mjs sets the default inline;
-  // a media query can pull them closer on narrow screens, so it is read back
-  // from the cascade rather than hard-coded here.
-  let labelK = Number(g.label)
-  const readLabelK = () => {
-    const value = parseFloat(getComputedStyle(stage).getPropertyValue('--label-k'))
-    if (!Number.isNaN(value)) labelK = value
-  }
+  // One need plays out in three moves: the needle sweeps to the tool, a signal
+  // runs out along it, and the signal comes home. The moves themselves are CSS
+  // transitions; this clock only decides which one is due.
+  const stepDuration = 5600   // one need, then the next
+  const outDuration = 450     // hub to station
+  const backDuration = 450    // and the same again home
+  // A quarter turn takes about two thirds of a second and a half turn about
+  // one, so the needle moves at the same pace whatever the distance.
+  const sweepFor = (deg) => (deg === 0 ? 0 : 320 + Math.abs(deg) * 3.8)
 
-  // Each label is paired with its dot on the ring once, up front.
-  const marks = nodes.map((node) => orbit.querySelector(`[data-dot="${node.dataset.orbitTool}"]`))
-
-  const at = (deg, k = 1) => {
-    const rad = (deg * Math.PI) / 180
-    return { x: cx + rx * k * Math.cos(rad), y: cy + ry * k * Math.sin(rad), rad }
-  }
-
-  const stepDuration = 5200
-  const orbitDuration = 160000
-  const travel = 950
   let active = 0
-  let rotation = 0
-  let elapsed = 0
+  let angle = angles[0]                        // where the needle points; it accumulates, so auto-play keeps turning one way
+  let sweep = 0                                // this need's sweep, in ms
+  let elapsed = outDuration + backDuration     // ms since the need was chosen; starts at rest, until woken
+  let answered = true                          // whether the readout shows this need's answer; the first ships written
+  let engaged = -1                             // the station that is lit
   let playing = !reduced.matches
-  let visible = true
+  let visible = false                          // until the observer reports the instrument on screen
+  let woken = false
   let hovered = false
   let frame = null
   let previousTime = null
 
+  const flight = () => sweep + outDuration + backDuration
+  // Needs advance only while playing and unheld. A move already under way
+  // completes regardless, so a click or a pause never strands the signal
+  // between the hub and the tool.
+  const running = () => playing && !hovered
+  const flying = () => !reduced.matches && elapsed < flight()
+  const awake = () => visible && !document.hidden && (running() || flying())
+
+  // Lights one station, its leader and its label; -1 lights none.
+  const engage = (index) => {
+    if (engaged === index) return
+    engaged = index
+    stations.forEach((station, i) => station.classList.toggle('is-engaged', i === index))
+    leaders.forEach((leader, i) => leader.classList.toggle('is-engaged', i === index))
+    nodes.forEach((node, i) => node.classList.toggle('is-engaged', i === index))
+  }
+  pings.forEach((ping) => ping.addEventListener('animationend', () => ping.classList.remove('is-pinging')))
+
   const draw = () => {
-    let target
-    nodes.forEach((node, index) => {
-      const deg = start + spacing * index + rotation
-      const dot = at(deg)
-      const label = at(deg, labelK)
-      // 0 at the back of the ring, 1 at the front — drives scale and weight.
-      const depth = ((Math.sin(dot.rad) + 1) / 2).toFixed(3)
-
-      node.style.left = `${(label.x / boxW) * 100}%`
-      node.style.top = `${(label.y / boxH) * 100}%`
-      node.style.setProperty('--depth', depth)
-
-      const mark = marks[index]
-      if (mark) {
-        mark.setAttribute('cx', dot.x.toFixed(2))
-        mark.setAttribute('cy', dot.y.toFixed(2))
-        mark.style.setProperty('--depth', depth)
+    const t = reduced.matches ? Infinity : elapsed
+    const phase = t < sweep ? 'sweep' : t < sweep + outDuration ? 'out' : t < flight() ? 'landed' : 'home'
+    if (orbit.dataset.phase !== phase) {
+      orbit.dataset.phase = phase
+      if (phase === 'landed' && !reduced.matches) pings[active].classList.add('is-pinging')
+    }
+    // The tool answers the moment the signal lands; the hub acknowledges once
+    // it is home. Under reduced motion both are true at once.
+    if (phase === 'landed' || phase === 'home') {
+      engage(active)
+      if (!answered) {
+        const chosen = nodes[active]
+        response.textContent = chosen.dataset.response
+        link.textContent = chosen.dataset.orbitTool
+        link.href = `#${chosen.dataset.orbitTool}`
+        if (spec) spec.textContent = chosen.dataset.spec
+        answered = true
       }
-      if (index === active) target = dot
-    })
-
-    reach.setAttribute('d', `M${cx} ${cy}L${target.x.toFixed(2)} ${target.y.toFixed(2)}`)
-
-    // One signal travels to the chosen tool and returns before the next need.
-    const phase = elapsed / travel
-    const progress = phase <= 1 ? phase : Math.max(0, 2 - phase)
-    signal.setAttribute('cx', (cx + (target.x - cx) * progress).toFixed(2))
-    signal.setAttribute('cy', (cy + (target.y - cy) * progress).toFixed(2))
-    signal.style.opacity = !reduced.matches && phase < 2 ? '1' : '0'
-    // The dot acknowledges the signal the moment it lands.
-    orbit.dataset.landed = String(reduced.matches || phase >= 1)
+    }
+    if (orbit.dataset.answered !== String(answered)) orbit.dataset.answered = String(answered)
   }
 
-  const select = (index, announce = false) => {
+  const select = (index, byUser = false) => {
+    let delta = (((angles[index] - angle) % 360) + 360) % 360   // clockwise by default
+    if (byUser && delta > 180) delta -= 360                       // a click takes the short way round
+    if (index !== active) { answered = false; engage(-1) }        // asking the same tool again only sends the signal again
     active = index
+    angle += delta
+    sweep = sweepFor(delta)
     elapsed = 0
-    const chosen = nodes[index]
+    needle.style.setProperty('--sweep', `${sweep}ms`)
+    needle.style.setProperty('--angle', `${angle}deg`)
     nodes.forEach((node, i) => {
       node.classList.toggle('is-selected', i === index)
       node.setAttribute('aria-pressed', String(i === index))
-      if (marks[i]) marks[i].classList.toggle('is-selected', i === index)
     })
+    const chosen = nodes[index]
     need.textContent = chosen.dataset.need
-    response.textContent = chosen.dataset.response
-    link.textContent = chosen.dataset.orbitTool
-    link.href = `#${chosen.dataset.orbitTool}`
-    if (spec) spec.textContent = chosen.dataset.spec
-    if (announce) {
+    if (byUser) {
       announcement.textContent = `When the agent needs ${chosen.dataset.need}, ${chosen.dataset.orbitTool} ${chosen.dataset.response}`
     }
     draw()
+    sync()
   }
-
-  const canRun = () => playing && visible && !hovered && !document.hidden
 
   const tick = (time) => {
     frame = null
-    if (!canRun()) { previousTime = null; return }
-    if (previousTime !== null) {
-      const delta = Math.min(time - previousTime, 80)
-      if (!reduced.matches) rotation = (rotation + (delta / orbitDuration) * 360) % 360
-      elapsed += delta
-      if (elapsed >= stepDuration) select((active + 1) % nodes.length)
-    }
+    if (!awake()) { previousTime = null; return }
+    const delta = previousTime === null ? 0 : Math.min(time - previousTime, 80)
     previousTime = time
+    if (running()) {
+      elapsed += delta
+      if (elapsed >= stepDuration) { select((active + 1) % nodes.length); return }
+    } else {
+      // Held or paused: only the move already under way completes.
+      elapsed = Math.min(elapsed + delta, flight())
+    }
     draw()
     frame = requestAnimationFrame(tick)
   }
 
   const sync = () => {
-    if (!canRun()) {
+    if (!awake()) {
       if (frame !== null) cancelAnimationFrame(frame)
       frame = null
       previousTime = null
@@ -140,9 +145,27 @@
     sync()
   }
 
+  // The first need ships drawn: needle on the tool, station lit, answer written.
+  // Waking sends one signal out to it and home, rather than clearing the readout
+  // to write the same answer again.
+  const wake = () => {
+    woken = true
+    elapsed = 0
+    draw()
+    sync()
+  }
+
   nodes.forEach((node, index) => {
     node.disabled = false
-    node.addEventListener('focus', () => setPlaying(false))
+    // Pointing at a label warms its leader and station, so the pairing reads before the click.
+    const hot = (on) => {
+      leaders[index].classList.toggle('is-hot', on)
+      stations[index].classList.toggle('is-hot', on)
+    }
+    node.addEventListener('pointerenter', () => hot(true))
+    node.addEventListener('pointerleave', () => hot(false))
+    node.addEventListener('focus', () => { hot(true); setPlaying(false) })
+    node.addEventListener('blur', () => hot(false))
     node.addEventListener('click', () => {
       setPlaying(false)
       select(index, true)
@@ -151,7 +174,7 @@
   control.hidden = false
   control.addEventListener('click', () => setPlaying(!playing))
 
-  // Hold the orbit while a pointer is choosing a tool, or the scene is unseen.
+  // Hold the instrument while a pointer is choosing a tool, or the scene is unseen.
   stage.addEventListener('pointerenter', (event) => {
     if (event.pointerType !== 'mouse') return
     hovered = true
@@ -162,58 +185,66 @@
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting && entry.intersectionRatio >= .25
+      if (visible && !woken) wake()
       sync()
     }, { threshold: [0, .25] })
     observer.observe(orbit)
+  } else {
+    visible = true
+    wake()
   }
   reduced.addEventListener('change', () => {
     if (reduced.matches) setPlaying(false)
     draw()
   })
 
-  readLabelK()
-  addEventListener('resize', () => { readLabelK(); draw() }, { passive: true })
-
-  select(0)
   setPlaying(playing)
 })();
 
-// Setup chooser and clipboard action.
+// Setup chooser and clipboard actions.
 (() => {
   const picker = document.querySelector('#tool-picker')
   const panels = [...document.querySelectorAll('.panel')]
-  if (!picker || !panels.length) return
-
-  const show = () => {
-    panels.forEach((panel) => {
-      const active = panel.id === `setup-${picker.value}`
-      panel.hidden = !active
-      panel.querySelector('.copy-status').textContent = ''
-    })
+  if (picker && panels.length) {
+    const show = () => {
+      panels.forEach((panel) => {
+        const active = panel.id === `setup-${picker.value}`
+        panel.hidden = !active
+        panel.querySelector('.copy-status').textContent = ''
+      })
+    }
+    document.querySelector('.picker-control').hidden = false
+    picker.addEventListener('change', show)
+    show()
   }
 
-  document.querySelector('.picker-control').hidden = false
-  picker.addEventListener('change', show)
-  show()
-
+  // Every copy button names its source by id: a hidden textarea holding a setup
+  // prompt, or a visible install command. Its confirmation and status live
+  // in the nearest [data-copy-scope].
   document.querySelectorAll('[data-copy]').forEach((button) => {
+    const scope = button.closest('[data-copy-scope]')
+    const status = scope.querySelector('.copy-status')
+    const hint = scope.querySelector('.panel-hint')
+    const source = document.getElementById(button.dataset.copy)
+    const isField = source instanceof HTMLTextAreaElement
     button.hidden = false
-    button.closest('.panel').querySelector('.panel-hint').textContent =
-      'Paste the setup prompt into your agent’s chat.'
+    if (hint) hint.textContent = 'Paste the setup prompt into your agent’s chat.'
 
     button.addEventListener('click', async () => {
-      const prompt = document.getElementById(button.dataset.copy)
-      const status = button.closest('.panel').querySelector('.copy-status')
       try {
-        await navigator.clipboard.writeText(prompt.value)
-        prompt.hidden = true
-        status.textContent = 'Copied. Ready to paste into your agent’s chat.'
+        await navigator.clipboard.writeText(isField ? source.value : source.textContent)
+        if (isField) source.hidden = true
+        status.textContent = button.dataset.copied
       } catch {
-        /* Clipboard blocked — reveal the textarea so the text is still gettable. */
-        prompt.hidden = false
-        prompt.focus()
-        prompt.select()
-        status.textContent = 'Select and copy the prompt above.'
+        /* Clipboard blocked — put the text in front of the reader instead. */
+        if (isField) {
+          source.hidden = false
+          source.focus()
+          source.select()
+        } else {
+          getSelection().selectAllChildren(source)
+        }
+        status.textContent = 'Select and copy the text above.'
       }
     })
   })

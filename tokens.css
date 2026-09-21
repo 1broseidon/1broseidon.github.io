@@ -6,10 +6,12 @@
   --font-body:    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-label:   "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Neutral, slightly warm surfaces soften the page and its inset content. */
-  --color-paper:   #F1F0EB;
-  --color-paper-2: #E8E7E1;
-  --color-paper-3: #DEDDD6;
+  /* Chalk: warm off-white, light enough to give the serif and the indigo air.
+   * Three sheets 2.6 L apart — oklch(97.2% 0.006 95) at the top — for the page,
+   * the captured-session band and the terminal insets. */
+  --color-paper:   #F7F6F1;
+  --color-paper-2: #EEEDE9;
+  --color-paper-3: #E6E4E0;
   --color-ink:     oklch(18% 0.014 265);
   --color-ink-2:   oklch(32% 0.014 265);
   --color-muted:   oklch(50% 0.014 265);
