@@ -27,9 +27,9 @@
       "name": "recoil",
       "description": "Read the docs you already wrote into local memory, and keep the decisions made against them.",
       "role": "Memory",
-      "dest": "github",
-      "url": "https://github.com/1broseidon/recoil",
-      "install": "https://github.com/1broseidon/recoil#install",
+      "dest": "recoil.sh",
+      "url": "https://recoil.sh",
+      "install": "https://recoil.sh/#install",
       "lang": "Go",
       "license": "MIT"
     },
