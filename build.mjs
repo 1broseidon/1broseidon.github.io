@@ -253,9 +253,24 @@ ${session.steps.map(step).join('\n')}
   </section>
 
   <section class="section" id="start" aria-labelledby="start-title">
-    <div class="start">
+    <div class="start start-lead">
       <div class="start-intro">
-        <h2 id="start-title">Start with one.</h2>
+        <h2 id="start-title">Run the chain ecosystem.</h2>
+        <p>One skill, and your agent knows the whole chain: which tool answers which question, in what order, what to write back, and how to install what is missing.</p>
+      </div>
+      <div class="start-command" data-copy-scope>
+        <pre class="command"><code id="skill-command">npx skills add 1broseidon/skills --skill chain</code></pre>
+        <div class="start-actions">
+          <a class="text-link" href="https://github.com/1broseidon/skills/blob/main/chain/SKILL.md" target="_blank" rel="noopener noreferrer">Read SKILL.md<span class="sr-only"> (opens in a new tab)</span></a>
+          <button class="copy-button" type="button" data-copy="skill-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
+        </div>
+        <p class="start-hint">Installs with the <a href="https://skills.sh" target="_blank" rel="noopener noreferrer">skills CLI<span class="sr-only"> (opens in a new tab)</span></a> into the agents you already use.</p>
+        <p class="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="start start-one">
+      <div class="start-intro">
+        <h2 id="start-one-title">Or start with what you need.</h2>
         <p>Follow the guide, or let your agent help with setup.</p>
         <div class="picker-control" hidden>
           <label class="picker-label" for="tool-picker">Choose a tool</label>
@@ -266,28 +281,6 @@ ${tools.map((tool) => `              <option value="${esc(tool.id)}">${esc(tool.
       </div>
       <div class="panels">
 ${tools.map(panel).join('\n')}
-      </div>
-      <div class="start-all">
-        <div class="start-method" data-copy-scope>
-          <h3>Or all four at once.</h3>
-          <p>One command for macOS and Linux. It installs each tool from its latest release, checks every download against the release’s checksums, and never uses sudo. It is a plain shell script — read it first.</p>
-          <pre class="command"><code id="bootstrap-command">curl -fsSL https://chain.sh/bootstrap.sh | sh</code></pre>
-          <div class="start-all-actions">
-            <a class="text-link" href="https://chain.sh/bootstrap.sh">Read bootstrap.sh</a>
-            <button class="copy-button" type="button" data-copy="bootstrap-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
-          </div>
-          <p class="copy-status" role="status" aria-live="polite"></p>
-        </div>
-        <div class="start-method" data-copy-scope>
-          <h3>Or hand your agent the workflow.</h3>
-          <p>The chain skill teaches an agent which tool answers which question, what order to ask them in, and what to write back before a session ends. One command adds it to the agents you already use, through the skills CLI. It installs none of the tools; the script above does that.</p>
-          <pre class="command"><code id="skill-command">npx skills add 1broseidon/skills --skill chain</code></pre>
-          <div class="start-all-actions">
-            <a class="text-link" href="https://github.com/1broseidon/skills/blob/main/chain/SKILL.md" target="_blank" rel="noopener noreferrer">Read SKILL.md<span class="sr-only"> (opens in a new tab)</span></a>
-            <button class="copy-button" type="button" data-copy="skill-command" data-copied="Copied. Paste it into a terminal." hidden>Copy command</button>
-          </div>
-          <p class="copy-status" role="status" aria-live="polite"></p>
-        </div>
       </div>
     </div>
   </section>
@@ -340,8 +333,9 @@ await writeFile(root('dist/index.html'), html)
 await writeFile(root('dist/_redirects'), redirects)
 
 /* bootstrap.sh is served as-is so an operator can read it in a browser before
- * running it — that is the whole point of it being a plain shell script.
- * Without the header rule the .sh extension is served as a download. */
+ * running it — that is the whole point of it being a plain shell script. The
+ * page no longer links it; the chain skill sends agents here when a tool is
+ * missing. Without the header rule the .sh extension is served as a download. */
 await copyFile(root('bootstrap.sh'), root('dist/bootstrap.sh'))
 await writeFile(root('dist/_headers'), `/bootstrap.sh
   Content-Type: text/plain; charset=utf-8

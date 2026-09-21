@@ -226,13 +226,16 @@ h2 { color: var(--color-ink); font: var(--text-display-s)/1.12 var(--font-displa
 .session-note { max-width: 72ch; margin-top: .5rem; color: var(--color-muted); font-size: .75rem; line-height: 1.7; }
 
 /* The existing chooser, without a second card or decorative chrome. */
-.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); grid-template-areas: "intro panels" "all panels"; align-items: start; gap: 2.5rem 4.5rem; }
+/* Two doors, one grid each: the skill first, then one tool at a time. Both rows
+ * keep the same columns, so the command and the panels share an edge. */
+.start { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); grid-template-areas: "intro action"; align-items: start; gap: 2.5rem 4.5rem; }
 .start-intro { grid-area: intro; }
 .start-intro > p { max-width: 29ch; margin-top: 1rem; font-size: .9375rem; color: var(--color-muted); }
+.start-lead .start-intro > p { max-width: 34ch; }
 .picker-control { margin-top: 1.75rem; }
 .picker-label { display: block; margin-bottom: .5rem; color: var(--color-muted); font-size: .8125rem; }
 .picker-control select { width: 100%; max-width: 22rem; min-height: 48px; padding: .7rem .9rem; background: var(--color-paper); border: 1px solid var(--color-rule-2); border-radius: 4px; color: var(--color-ink); font-size: 1rem; }
-.panels { grid-area: panels; min-width: 0; border-left: 1px solid var(--color-rule); padding-left: 3rem; }
+.panels, .start-command { grid-area: action; min-width: 0; border-left: 1px solid var(--color-rule); padding-left: 3rem; }
 .panel:not([hidden]) ~ .panel:not([hidden]) { margin-top: 2rem; }
 .panel h3 { color: var(--color-ink); font: 1.75rem/1.25 var(--font-display); letter-spacing: -.02em; }
 .panel-description { font-size: .9375rem; max-width: 38ch; margin-top: .8rem; }
@@ -248,16 +251,16 @@ h2 { color: var(--color-ink); font: var(--text-display-s)/1.12 var(--font-displa
 .copy-status { min-height: 1.5em; margin-top: .5rem; color: var(--color-accent); font-size: .8125rem; }
 .prompt-fallback { width: 100%; margin-top: .75rem; padding: .75rem; border: 1px solid var(--color-rule-2); border-radius: 4px; background: var(--color-paper); font-size: .875rem; line-height: 1.6; resize: vertical; }
 
-/* The other doors: every tool at once, from a script the reader can open first,
- * and the skill that teaches an agent the workflow. One rule separates them. */
-.start-all { grid-area: all; min-width: 0; padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
-.start-method + .start-method { margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--color-rule); }
-.start-method h3 { color: var(--color-ink); font: 1.5rem/1.25 var(--font-display); letter-spacing: -.02em; }
-.start-method > p { max-width: 38ch; margin-top: .8rem; font-size: .9375rem; }
+/* The second door sits under one rule, its heading a step below the section's. */
+.start-one { margin-top: var(--space-xl); padding-top: var(--space-xl); border-top: 1px solid var(--color-rule); }
+.start-one h2 { font-size: clamp(1.875rem, 3.5vw, 2.125rem); }
 /* The command wraps rather than scrolls: on a phone the whole line has to be seen to be trusted. */
-.command { margin: var(--space-sm) 0 0; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-rule); border-radius: var(--radius-card); background: var(--color-paper-2); color: var(--color-ink); font: .8125rem/1.7 var(--font-label); white-space: pre-wrap; overflow-wrap: anywhere; }
-.start-all-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; margin-top: var(--space-2xs); }
-.start-all-actions .text-link { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; }
+.command { margin: 0; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-rule); border-radius: var(--radius-card); background: var(--color-paper-2); color: var(--color-ink); font: .8125rem/1.7 var(--font-label); white-space: pre-wrap; overflow-wrap: anywhere; }
+.start-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; margin-top: var(--space-2xs); }
+.start-actions .text-link { display: inline-flex; align-items: center; min-height: 44px; font-size: .8125rem; }
+.start-hint { margin-top: .25rem; font-size: .75rem; color: var(--color-muted); }
+.start-hint a { text-decoration: underline; text-decoration-color: var(--color-rule-2); text-underline-offset: 3px; }
+.start-hint a:hover { color: var(--color-accent); text-decoration-color: currentColor; }
 
 .foot { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-block: 2rem 3rem; border-top: 1px solid var(--color-rule); }
 .foot .wordmark { font-size: 1.65rem; }
@@ -275,7 +278,7 @@ h2 { color: var(--color-ink); font: var(--text-display-s)/1.12 var(--font-displa
   .orbit { justify-self: start; }
   .tool-row { grid-template-columns: 8rem minmax(0, 1fr) auto; gap: 1.5rem; }
   .start { gap: 2rem; }
-  .panels { padding-left: 2rem; }
+  .panels, .start-command { padding-left: 2rem; }
 }
 @media (max-width: 42rem) {
   .mast { padding-block: 1.2rem; gap: 1rem; }
@@ -304,10 +307,11 @@ h2 { color: var(--color-ink); font: var(--text-display-s)/1.12 var(--font-displa
   .step-why { margin-top: .5rem; }
   .step-output { margin-left: 0; }
   .term { padding: 1rem; font-size: .75rem; }
-  .start { grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "panels" "all"; gap: 2rem; }
+  .start { grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "action"; gap: 2rem; }
+  .start-one { margin-top: var(--space-lg); padding-top: var(--space-lg); }
   .start-intro > p { max-width: none; }
   .picker-control select { max-width: none; }
-  .panels { padding-left: 0; border-left: 0; }
+  .panels, .start-command { padding-left: 0; border-left: 0; }
   .foot { align-items: flex-start; flex-direction: column; gap: 1rem; padding-block: 1.75rem 2rem; }
   .foot-links { width: 100%; justify-content: space-between; }
 }
